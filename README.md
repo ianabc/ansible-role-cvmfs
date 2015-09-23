@@ -6,14 +6,23 @@ Configures a CVMFS client
 Requirements
 ------------
 
+ - FGCI Repo
+  - If you want the FGCI config rpm
+ - Internet
 
 Role Variables
 --------------
 
+If fgci_install variable is set to True - we'll install the FGI cvmfs config files - to get the FGI CVMFS repo among other things. 
+
+fgci_install: True
 
 Dependencies
 ------------
 
+Only tested on EL7
+
+The autofs config is probably not good enough for EL6
 
 Example Playbook
 ----------------
