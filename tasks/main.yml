@@ -11,7 +11,7 @@
   yum: name=cvmfs-repofiles-fgi state=present
   when: fgci_install == True
 
-- name: Install CVMFS client
+- name: Install CVMFS client EL6
   yum: name={{ item }} state=present
   with_items:
     - cvmfs-release
@@ -19,6 +19,15 @@
     - cvmfs
     - cvmfs-init-scripts
     - cvmfs-auto-setup
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "6"
+
+- name: Install CVMFS client EL7
+  yum: name={{ item }} state=present
+  with_items:
+    - cvmfs-keys
+    - cvmfs
+    - cvmfs-config-default
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
 
 #- name: template over the local config files
 #  template: src={{ item }} dest=/etc/cvmfs/config.d/{{ item }}
