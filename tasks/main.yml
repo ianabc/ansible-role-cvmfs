@@ -48,3 +48,11 @@
 
 - debug: msg="Path exists and is a directory"
   when: p.stat.isdir is defined and p.stat.isdir
+
+- name: run cvmfs_config chksetup 
+  command: cvmfs_config chksetup
+  register: chksetupout
+
+- name: print chksetup results
+  debug: var=chksetupout
+  when: chksetupout is defined
