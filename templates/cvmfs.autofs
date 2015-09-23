@@ -1,0 +1,2 @@
+# {{ ansible_managed }}
+/cvmfs /etc/auto.cvmfs
