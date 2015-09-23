@@ -1,0 +1,42 @@
+---
+# tasks file for ansible-role-cvmfs
+#
+---
+- name: download the CVMFS repo
+  get_url: url=http://cvmrepo.web.cern.ch/cvmrepo/yum/cernvm.repo dest=/etc/yum.repos.d/cernvm.repo mode=0644
+
+- name: install CVMFS gpg key
+  rpm_key: key=http://cvmrepo.web.cern.ch/cvmrepo/yum/RPM-GPG-KEY-CernVM state=present
+
+- name: Install FGCI CVMFS repofiles
+  yum: name=cvmfs-repofiles-fgi state=present
+  when: fgci-install == True
+
+- name: Install CVMFS client
+  yum: name={{ item }} state=present
+  with_items:
+    - cvmfs-release
+    - cvmfs-keys
+    - cvmfs
+    - cvmfs-init-scripts
+    - cvmfs-auto-setup
+
+#- name: template over the local config files
+#  template: src={{ item }} dest=/etc/cvmfs/config.d/{{ item }}
+#  register: configfiles1
+#  with_items: cvmfs_configs
+#  when: cvmfs_configs is defined
+
+#- name: template over default.local
+#  register: configfiles2
+#  template: src=default.local dest=/etc/cvmfs/default.local
+
+- name: ensure that autofs is running
+  service: name=autofs state=started
+
+- name: check that the repo is mounted
+  stat: path=/cvmfs/fgi.csc.fi
+  register: p
+
+- debug: msg="Path exists and is a directory"
+  when: p.stat.isdir is defined and p.stat.isdir
