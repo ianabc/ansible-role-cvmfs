@@ -9,7 +9,7 @@
 
 - name: Install FGCI CVMFS repofiles
   yum: name=cvmfs-repofiles-fgi state=present
-  when: fgci-install is True
+  when: fgci_install is True
 
 - name: Install CVMFS client
   yum: name={{ item }} state=present
