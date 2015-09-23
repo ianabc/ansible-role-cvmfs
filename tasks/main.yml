@@ -39,8 +39,20 @@
 #  register: configfiles2
 #  template: src=default.local dest=/etc/cvmfs/default.local
 
-- name: ensure that autofs is running
-  service: name=autofs state=started
+- name: add /etc/auto.master.d/cvmfs.autofs EL7 only
+  template: src=cvmfs.autofs dest=/etc/auto.master.d/cvmfs.autofs
+  register: autofsconfig
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+
+- name: ensure that autofs is running and enabled
+  service: name=autofs state=started enabled=yes
+
+- name: ensure that autofs is restarted after configchange
+  service: name=autofs state=restarted
+  when: autofsconfig.changed
+
+- name: cvmfs_config chksetup which causes the playbook to fail when there are errors
+  command: cvmfs_config chksetup
 
 - name: check that the repo is mounted
   stat: path=/cvmfs/fgi.csc.fi
@@ -48,11 +60,3 @@
 
 - debug: msg="Path exists and is a directory"
   when: p.stat.isdir is defined and p.stat.isdir
-
-- name: run cvmfs_config chksetup 
-  command: cvmfs_config chksetup
-  register: chksetupout
-
-- name: print chksetup results
-  debug: var=chksetupout
-  when: chksetupout is defined
