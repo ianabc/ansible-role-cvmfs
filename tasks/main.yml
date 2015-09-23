@@ -1,7 +1,6 @@
 ---
 # tasks file for ansible-role-cvmfs
 #
----
 - name: download the CVMFS repo
   get_url: url=http://cvmrepo.web.cern.ch/cvmrepo/yum/cernvm.repo dest=/etc/yum.repos.d/cernvm.repo mode=0644
 
