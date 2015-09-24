@@ -55,6 +55,10 @@
 
 - name: cvmfs_config chksetup which causes the playbook to fail when there are errors
   command: cvmfs_config chksetup
+  register: cvmfschksetup
+
+- name: print output of cvmfschksetup
+  debug: var=cvmfschksetup
 
 - name: check that the repo is mounted
   stat: path=/cvmfs/fgi.csc.fi
