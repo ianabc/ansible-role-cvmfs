@@ -1,0 +1,2 @@
+# {{ ansible_managed }}
+export CMS_LOCAL_SITE=/cvmfs/cms.cern.ch/SITECONF/{{cms_site}}

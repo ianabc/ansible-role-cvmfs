@@ -1,16 +1,9 @@
 ---
 # defaults file for ansible-role-cvmfs
 #
-cvmfs_repositories: 
- - fgi.csc.fi
- - cms.cern.ch
- - alice.cern.ch
- - atlast.cern.ch
 cvmfs_http_proxy: "{{ proxy | Default('DIRECT') }}"
 cvmfs_quota_limit: "20480"
 
-cvmfs_configs:
- - cms.cern.ch.conf
- - cms.cern.ch.local
+fgci_install: False
 
-fgci_install: True
+# cms_site: ""

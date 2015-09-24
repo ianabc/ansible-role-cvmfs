@@ -1,0 +1,3 @@
+# {{ ansible_managed }}
+#
+CVMFS_HTTP_PROXY={{cvmfs_http_proxy}}
