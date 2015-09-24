@@ -8,7 +8,7 @@
   rpm_key: key=http://cvmrepo.web.cern.ch/cvmrepo/yum/RPM-GPG-KEY-CernVM state=present
 
 - name: Install FGCI repo 
-  yum: pkg=http://idris.fgi.csc.fi/fgci7/x86_64/fgci/fgci-release7-1-1.el7.noarch.rpm
+  yum: pkg=http://idris.fgi.csc.fi/fgci7/x86_64/fgci/rpms/fgci-release7-1-1.el7.noarch.rpm
   when: ansible_distribution_major_version == "7"
   when: fgci_install == True
 
@@ -40,9 +40,11 @@
 #  with_items: cvmfs_configs
 #  when: cvmfs_configs is defined
 
+# TODO: If no fgci_install - we need to add the default.local
 #- name: template over default.local
 #  register: configfiles2
 #  template: src=default.local dest=/etc/cvmfs/default.local
+#  when: fgci_install != "True"
 
 - name: add /etc/auto.master.d/cvmfs.autofs EL7 only
   template: src=cvmfs.autofs dest=/etc/auto.master.d/cvmfs.autofs
