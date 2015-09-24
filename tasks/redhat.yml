@@ -40,7 +40,6 @@
 
 - name: add a default.local if none exists
   template: src=default.local dest=/etc/cvmfs/default.local force=no mode=0644
-  when: fgci_install != "True"
 
 - name: add /etc/auto.master.d/cvmfs.autofs EL7 only
   template: src=cvmfs.autofs dest=/etc/auto.master.d/cvmfs.autofs
