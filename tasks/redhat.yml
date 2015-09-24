@@ -1,0 +1,67 @@
+---
+# tasks file for ansible-role-cvmfs
+#
+- name: download the CVMFS repo
+  get_url: url=http://cvmrepo.web.cern.ch/cvmrepo/yum/cernvm.repo dest=/etc/yum.repos.d/cernvm.repo mode=0644
+
+- name: install CVMFS gpg key
+  rpm_key: key=http://cvmrepo.web.cern.ch/cvmrepo/yum/RPM-GPG-KEY-CernVM state=present
+
+- name: Install FGCI repo 
+  yum: pkg=http://idris.fgi.csc.fi/fgci7/x86_64/fgci/fgci-release7-1-1.el7.noarch.rpm
+  when: ansible_distribution_major_version == "7"
+  when: fgci_install == True
+
+- name: Install FGCI CVMFS repofiles
+  yum: name=cvmfs-repofiles-fgi state=present
+  when: fgci_install == True
+
+- name: Install CVMFS client EL6
+  yum: name={{ item }} state=present
+  with_items:
+    - cvmfs-release
+    - cvmfs-keys
+    - cvmfs
+    - cvmfs-init-scripts
+    - cvmfs-auto-setup
+  when: ansible_distribution_major_version == "6"
+
+- name: Install CVMFS client EL7
+  yum: name={{ item }} state=present
+  with_items:
+    - cvmfs-keys
+    - cvmfs
+    - cvmfs-config-default
+  when: ansible_distribution_major_version == "7"
+
+#- name: template over the local config files
+#  template: src={{ item }} dest=/etc/cvmfs/config.d/{{ item }}
+#  register: configfiles1
+#  with_items: cvmfs_configs
+#  when: cvmfs_configs is defined
+
+#- name: template over default.local
+#  register: configfiles2
+#  template: src=default.local dest=/etc/cvmfs/default.local
+
+- name: add /etc/auto.master.d/cvmfs.autofs EL7 only
+  template: src=cvmfs.autofs dest=/etc/auto.master.d/cvmfs.autofs
+  register: autofsconfig
+  when: ansible_distribution_major_version == "7"
+
+- name: ensure that autofs is running and enabled
+  service: name=autofs state=started enabled=yes
+
+- name: ensure that autofs is restarted after configchange
+  service: name=autofs state=restarted
+  when: autofsconfig.changed
+
+- name: cvmfs_config chksetup which causes the playbook to fail when there are errors
+  command: cvmfs_config chksetup
+
+- name: check that the repo is mounted
+  stat: path=/cvmfs/fgi.csc.fi
+  register: p
+
+- debug: msg="Path exists and is a directory"
+  when: p.stat.isdir is defined and p.stat.isdir
