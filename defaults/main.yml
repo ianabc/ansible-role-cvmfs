@@ -6,4 +6,7 @@ cvmfs_quota_limit: "20480"
 
 fgci_install: False
 
+# This repo is used to test cvmfs after the playbook
+cvmfs_test_repo: "fgi.csc.fi"
+
 # cms_site: ""

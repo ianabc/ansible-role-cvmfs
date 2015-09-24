@@ -38,11 +38,11 @@
   template: src=cms.cern.ch.local dest=/etc/cvmfs/config.d/cms.cern.ch.local mode=0644
   when: cms_site is defined
 
-- name: add a default.local if none exists
+- name: template cvmfs/default.local if none exists
   template: src=default.local dest=/etc/cvmfs/default.local force=no mode=0644
 
-- name: add /etc/auto.master.d/cvmfs.autofs EL7 only
-  template: src=cvmfs.autofs dest=/etc/auto.master.d/cvmfs.autofs
+- name: template /etc/auto.master.d/cvmfs.autofs EL7 only
+  template: src=cvmfs.autofs dest=/etc/auto.master.d/cvmfs.autofs backup=yes
   register: autofsconfig
   when: ansible_distribution_major_version == "7"
 
@@ -58,11 +58,11 @@
   register: cvmfschksetup
 
 - name: print output of cvmfschksetup
-  debug: var=cvmfschksetup
+  debug: var=cvmfschksetup["stdout"]
 
 - name: check that the repo is mounted
-  stat: path=/cvmfs/fgi.csc.fi
+  stat: path=/cvmfs/{{cvmfs_test_repo}}
   register: p
 
-- debug: msg="Path exists and is a directory"
+- debug: msg="Can list cvmfs_test_repo"
   when: p.stat.isdir is defined and p.stat.isdir
