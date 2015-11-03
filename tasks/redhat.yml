@@ -48,28 +48,12 @@
   register: autofsconfig
   when: ansible_distribution_major_version == "7"
 
-# https://github.com/ansible/ansible-modules-core/issues/593
 - name: ensure that autofs is running and enabled
   service: name=autofs state=started enabled=yes
-  register: autofsenable
-  ignore_errors: True
-
-- name: enable autofs manually
-  command: systemctl enable autofs
-  when: autofsenable.failed
-
-- name: start autofs manually
-  command: systemctl restart autofs
-  when: autofsenable.failed
 
 - name: ensure that autofs is restarted after configchange
   service: name=autofs state=restarted
   when: autofsconfig.changed
-  register: autofsrestart
-
-- name: restart autofs manually
-  command: systemctl restart autofs
-  when: autofsrestart.failed
 
 - name: cvmfs_config chksetup which causes the playbook to fail when there are errors
   command: cvmfs_config chksetup
