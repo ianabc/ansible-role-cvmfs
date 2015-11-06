@@ -58,9 +58,9 @@
   command: cvmfs_config chksetup
   register: cvmfschksetup
 
-- name: print output of cvmfschksetup
-  debug: var=cvmfschksetup["stdout"]
-  when: cvmfschksetup.changed
+#- name: print output of cvmfschksetup
+#  debug: var=cvmfschksetup["stdout"]
+#  when: cvmfschksetup.changed
 
 - name: check that the repo is mounted
   stat: path=/cvmfs/{{cvmfs_test_repo}}
