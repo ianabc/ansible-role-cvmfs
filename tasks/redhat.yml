@@ -38,9 +38,13 @@
   template: src=cms.cern.ch.local dest=/etc/cvmfs/config.d/cms.cern.ch.local mode=0644
   when: cms_site is defined
 
-# TODO: What if we do want to overwrite it?
-- name: template cvmfs/default.local if none exists
+- name: template cvmfs/default.local if none exists - no overwrite
   template: src=default.local dest=/etc/cvmfs/default.local force=no mode=0644
+  when: cvmfs_overwrite_default_local == False
+
+- name: template cvmfs/default.local if it exists - overwrites
+  template: src=default.local dest=/etc/cvmfs/default.local force=yes mode=0644 backup=yes
+  when: cvmfs_overwrite_default_local == True
 
 - name: template /etc/auto.master.d/cvmfs.autofs EL7 only
   template: src=cvmfs.autofs dest=/etc/auto.master.d/cvmfs.autofs backup=yes

@@ -10,3 +10,6 @@ fgci_install: False
 cvmfs_test_repo: "fgi.csc.fi"
 
 # cms_site: ""
+#
+# Set cvmfs_overwrite_default_local to False to not overwrite default.local
+cvmfs_overwrite_default_local: True
