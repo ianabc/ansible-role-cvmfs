@@ -3,9 +3,20 @@
 #
 - name: download the CVMFS repo
   get_url: url=http://cvmrepo.web.cern.ch/cvmrepo/yum/cernvm.repo dest=/etc/yum.repos.d/cernvm.repo mode=0644
+  register: cvmfs_cernrepo
 
 - name: install CVMFS gpg key
   rpm_key: key=http://cvmrepo.web.cern.ch/cvmrepo/yum/RPM-GPG-KEY-CernVM state=present
+  register: cvmfs_cernrepokey
+
+- name: copy in cernvm.repo if get_url from cvmrepo.web.cern.ch fails
+  copy: src=cernvm.repo dest=/etc/yum.repos.d/cernvm.repo mode=0644
+  when: cvmfs_cernrepo.failed
+
+#TODO?
+#- name: add a cernkey if cvmfs_cernrepokey failed
+#  copy: src=cernvm.repo dest=/etc/yum.repos.d/cernvm.repo mode=0644
+#  when: cvmfs_cernrepo.failed
 
 - name: Install FGCI repo 
   yum: pkg=http://idris.fgi.csc.fi/fgci7/x86_64/fgci/rpms/fgci-release7-1-1.el7.noarch.rpm
