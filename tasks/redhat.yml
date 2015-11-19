@@ -11,7 +11,7 @@
 
 - name: copy in cernvm.repo if get_url from cvmrepo.web.cern.ch fails
   copy: src=cernvm.repo dest=/etc/yum.repos.d/cernvm.repo mode=0644
-  when: cvmfs_cernrepo.failed
+  when: cvmfs_cernrepo|failed
 
 #TODO?
 #- name: add a cernkey if cvmfs_cernrepokey failed
