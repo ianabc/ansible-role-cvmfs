@@ -15,15 +15,15 @@ Requirements
 Role Variables
 --------------
 
-# fgci_install variable is set to True - we'll install the FGI cvmfs config files - to get the FGI CVMFS repo among other things. 
+ - fgci_install variable is set to True - we'll install the FGI cvmfs config files - to get the FGI CVMFS repo among other things. 
 
 fgci_install: True
 
-# cvmfs_http_proxy can be pointed to an http proxy
+ - cvmfs_http_proxy can be pointed to an http proxy
 
 cvmfs_http_proxy: DIRECT
 
-# Set cvmfs_overwrite_default_local to False to not overwrite default.local
+ - Set cvmfs_overwrite_default_local to False to not overwrite default.local
 
 cvmfs_overwrite_default_local: True
 
