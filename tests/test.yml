@@ -3,6 +3,6 @@
  - hosts: localhost
    remote_user: root
    vars:
-     - fcgi_install: True
+     - fgci_install: True
    roles:
      - ansible-role-cvmfs
