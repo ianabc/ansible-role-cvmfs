@@ -72,6 +72,8 @@
 - name: cvmfs_config chksetup which causes the playbook to fail when there are errors
   command: cvmfs_config chksetup
   register: cvmfschksetup
+  failed_when: cvmfschksetup.rc != 0
+  changed_when: false
 
 #- name: print output of cvmfschksetup
 #  debug: var=cvmfschksetup["stdout"]
