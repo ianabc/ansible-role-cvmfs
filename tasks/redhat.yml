@@ -74,6 +74,7 @@
   register: cvmfschksetup
   failed_when: cvmfschksetup.rc != 0
   changed_when: false
+  when: ansible_virtualization_type != "docker"
 
 #- name: print output of cvmfschksetup
 #  debug: var=cvmfschksetup["stdout"]
