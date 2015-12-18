@@ -65,6 +65,7 @@
 
 - name: ensure that autofs is running and enabled
   service: name=autofs state=started enabled=yes
+  when: ansible_virtualization_type != "docker"
 
 - name: ensure that autofs is restarted after configchange
   service: name=autofs state=restarted
