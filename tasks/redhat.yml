@@ -69,7 +69,7 @@
 
 - name: ensure that autofs is restarted after configchange
   service: name=autofs state=restarted
-  when: autofsconfig.changed
+  when: autofsconfig.changed and ansible_virtualization_type != "docker"
 
 - name: cvmfs_config chksetup which causes the playbook to fail when there are errors
   command: cvmfs_config chksetup
