@@ -1,0 +1,89 @@
+---
+# tasks file for ansible-role-cvmfs
+#
+
+- name: Check if cvmfs is installed 
+  command: dpkg-query -W cvmfs
+  register: reg_cvmfs_check_deb
+  failed_when: reg_cvmfs_check_deb.rc > 1
+  changed_when: reg_cvmfs_check_deb.rc == 1
+
+- name: Check if cvmfs-config is installed
+  command: dpkg-query -W cvmfs-config
+  register: reg_cvmfs_config_check_deb
+  failed_when: reg_cvmfs_config_check_deb.rc > 1
+  changed_when: reg_cvmfs_config_check_deb.rc == 1
+
+- name: Download cvmfs
+  get_url: 
+    url="{{ cvmfs_deb_url }}"
+    dest="/tmp/cvmfs.deb"
+  when: reg_cvmfs_check_deb.rc == 1
+
+- name: Download cvmfs-config
+  get_url: 
+    url="{{ cvmfs_deb_config_url }}"
+    dest="/tmp/cvmfs-config.deb"
+  when: cvmfs_deb_config_url is defined and reg_cvmfs_config_check_deb.rc == 1
+
+- name: Install cvmfs-config-default before cvmfs
+  apt: name=cvmfs-config-default
+
+- name: Install cvmfs-config
+  apt: deb="/tmp/cvmfs-config.deb"
+  when: cvmfs_deb_config_url is defined
+
+- name: Install cvmfs
+  apt: deb="/tmp/cvmfs.deb"
+
+- name: Install autofs
+  apt: name=autofs state=present
+
+- name: add a cms.cern.ch.local if cms_site is defined
+  template: src=cms.cern.ch.local dest=/etc/cvmfs/config.d/cms.cern.ch.local mode=0644
+  when: cms_site is defined
+
+- name: template cvmfs/default.local if none exists - no overwrite
+  template: src=default.local dest=/etc/cvmfs/default.local force=no mode=0644
+  when: cvmfs_overwrite_default_local == False
+
+- name: template cvmfs/default.local if it exists - overwrites
+  template: src=default.local dest=/etc/cvmfs/default.local force=yes mode=0644 backup=yes
+  when: cvmfs_overwrite_default_local == True
+
+- name: ensure /etc/auto.master.d/ exists
+  file: path=/etc/auto.master.d state=directory
+
+- name: template /etc/auto.master.d/cvmfs.autofs
+  template: src=cvmfs.autofs dest=/etc/auto.master.d/cvmfs.autofs backup=yes
+  register: autofsconfig
+
+- name: ensure that autofs is running and enabled
+  service: name=autofs state=started enabled=yes
+  when: ansible_virtualization_type != "docker"
+
+- name: ensure that autofs is restarted after configchange
+  service: name=autofs state=restarted
+  when: autofsconfig.changed and ansible_virtualization_type != "docker"
+
+# TODO:
+# add cvmfs user to fuse group
+# user_allow_other in /etc/fuse.conf
+
+- name: cvmfs_config chksetup which causes the playbook to fail when there are errors
+  command: cvmfs_config chksetup
+  register: cvmfschksetup
+  failed_when: cvmfschksetup.rc != 0
+  changed_when: false
+  when: ansible_virtualization_type != "docker"
+
+#- name: print output of cvmfschksetup
+#  debug: var=cvmfschksetup["stdout"]
+#  when: cvmfschksetup.changed
+
+- name: check that the repo is mounted
+  stat: path=/cvmfs/{{cvmfs_test_repo}}
+  register: p
+
+- debug: msg="Can list cvmfs_test_repo"
+  when: p.stat.isdir is defined and p.stat.isdir

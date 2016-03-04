@@ -13,3 +13,6 @@ cvmfs_test_repo: "fgi.csc.fi"
 #
 # Set cvmfs_overwrite_default_local to False to not overwrite default.local
 cvmfs_overwrite_default_local: True
+
+cvmfs_deb_url: "https://ecsft.cern.ch/dist/cvmfs/cvmfs-2.1.20/cvmfs_2.1.20_amd64.deb"
+cvmfs_deb_config_url: "https://ecsft.cern.ch/dist/cvmfs/cvmfs-config/cvmfs-config-default_latest_all.deb"
