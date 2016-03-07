@@ -30,7 +30,7 @@ cvmfs_overwrite_default_local: True
 Dependencies
 ------------
 
-Only tested on EL7
+Only tested on EL7 and on Ubuntu 15.04
 
 The autofs config is probably not good enough for EL6
 

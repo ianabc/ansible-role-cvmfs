@@ -1,6 +1,10 @@
 ---
 # tasks file for ansible-role-cvmfs
 #
+#
+- name: install dependencies
+  apt: name={{ item }} state=present
+  with_items: cvmfs_deb_dependencies
 
 - name: Check if cvmfs is installed 
   command: dpkg-query -W cvmfs
@@ -26,18 +30,25 @@
     dest="/tmp/cvmfs-config.deb"
   when: cvmfs_deb_config_url is defined and reg_cvmfs_config_check_deb.rc == 1
 
-- name: Install cvmfs-config-default before cvmfs
-  apt: name=cvmfs-config-default
-
 - name: Install cvmfs-config
   apt: deb="/tmp/cvmfs-config.deb"
-  when: cvmfs_deb_config_url is defined
+  when: cvmfs_deb_config_url is defined and reg_cvmfs_config_check_deb.rc == 1
 
 - name: Install cvmfs
-  apt: deb="/tmp/cvmfs.deb"
+  apt: deb="/tmp/cvmfs.deb" 
+  when: reg_cvmfs_check_deb.rc == 1
 
 - name: Install autofs
   apt: name=autofs state=present
+
+- name: add cvmfs user to fuse group
+  user: name=cvmfs append=yes groups=fuse
+
+- name: lineinfile fuse.conf to enable user_allow_other
+  lineinfile: dest=/etc/fuse.conf
+              regexp='^user_allow_other$'
+              line='user_allow_other'
+              backup=yes
 
 - name: add a cms.cern.ch.local if cms_site is defined
   template: src=cms.cern.ch.local dest=/etc/cvmfs/config.d/cms.cern.ch.local mode=0644
