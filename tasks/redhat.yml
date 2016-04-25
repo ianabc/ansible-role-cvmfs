@@ -37,20 +37,20 @@
 - name: Install CVMFS client EL6
   yum: name={{ item }} state=present
   with_items:
-    - cvmfs-release
-    - cvmfs-keys
-    - cvmfs
-    - cvmfs-init-scripts
-    - cvmfs-auto-setup
+    - "cvmfs-release"
+    - "cvmfs-keys"
+    - "cvmfs"
+    - "cvmfs-init-scripts"
+    - "cvmfs-auto-setup"
   when: ansible_distribution_major_version == "6"
 
 - name: Install CVMFS client EL7
   yum: name={{ item }} state=present
   with_items:
-    - cvmfs-keys
-    - cvmfs
-    - cvmfs-config-default
-    - autofs
+    - "cvmfs-keys"
+    - "cvmfs"
+    - "cvmfs-config-default"
+    - "autofs"
   when: ansible_distribution_major_version == "7"
 
 - name: add a cms.cern.ch.local if cms_site is defined

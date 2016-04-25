@@ -4,7 +4,7 @@
 #
 - name: install dependencies
   apt: name={{ item }} state=present
-  with_items: cvmfs_deb_dependencies
+  with_items: "{{ cvmfs_deb_dependencies }}"
 
 - name: Check if cvmfs is installed 
   command: dpkg-query -W cvmfs
