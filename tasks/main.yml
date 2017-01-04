@@ -40,7 +40,7 @@
      src: cvmfs.autofs
      dest: /etc/auto.master.d/cvmfs.autofs
      backup: yes
-   when: (ansible_os_family == "RedHat" and ansible_distribution_major_version|int >= "7") or "ansible_os_family == "Debian"
+   when: (ansible_os_family == "RedHat" and ansible_distribution_major_version|int >= "7") or ansible_os_family == "Debian"
    notify: restart autofs
    register: autofsconfig
  
