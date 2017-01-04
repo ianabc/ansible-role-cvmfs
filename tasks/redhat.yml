@@ -1,41 +1,59 @@
 ---
 # tasks file for ansible-role-cvmfs
 #
-- name: download the CVMFS repo
-  get_url: url=http://cvmrepo.web.cern.ch/cvmrepo/yum/cernvm.repo dest=/etc/yum.repos.d/cernvm.repo mode=0644
+- name: get_url the CVMFS repo
+  get_url:
+    url: http://cvmrepo.web.cern.ch/cvmrepo/yum/cernvm.repo
+    dest: /etc/yum.repos.d/cernvm.repo
+    mode: 0644
   register: cvmfs_cernrepo
   ignore_errors: True
 
-- name: install CVMFS gpg key
-  rpm_key: key=http://cvmrepo.web.cern.ch/cvmrepo/yum/RPM-GPG-KEY-CernVM state=present
+- name: rpm_key CVMFS gpg key
+  rpm_key:
+    key: http://cvmrepo.web.cern.ch/cvmrepo/yum/RPM-GPG-KEY-CernVM
+    state: present
   register: cvmfs_cernrepokey
 
 - name: copy in cernvm.repo if get_url from cvmrepo.web.cern.ch fails
-  copy: src=cernvm.repo dest=/etc/yum.repos.d/cernvm.repo mode=0644
+  copy:
+    src: cernvm.repo
+    dest: /etc/yum.repos.d/cernvm.repo
+    mode: 0644
   when: cvmfs_cernrepo|failed
 
 #TODO?
 #- name: add a cernkey if cvmfs_cernrepokey failed
-#  copy: src=cernvm.repo dest=/etc/yum.repos.d/cernvm.repo mode=0644
+#  rpm_key: src=cernvm.repo dest=/etc/yum.repos.d/cernvm.repo mode=0644
 #  when: cvmfs_cernrepo.failed
 #
 
 - name: Check if fgci-release7 is installed
-  yum: pkg=fgci-release7 state=installed
+  yum:
+    pkg: fgci-release7
+    state: installed
   register: reg_cvmfs_fgci7_installed
   check_mode: no
   ignore_errors: True
 
-- name: Install FGCI repo 
-  yum: pkg=http://idris.fgi.csc.fi/fgci7/x86_64/fgci/rpms/fgci-release7-1-1.el7.noarch.rpm
-  when: ansible_distribution_major_version == "7" and fgci_install == True and reg_cvmfs_fgci7_installed|failed
+- name: Install FGCI repo (fgci-release7) if it is not
+  yum:
+    pkg: http://idris.fgi.csc.fi/fgci7/x86_64/fgci/rpms/fgci-release7-1-1.el7.noarch.rpm
+  when: 
+    - ansible_distribution_major_version == "7" 
+    - fgci_install == True 
+    - reg_cvmfs_fgci7_installed|failed
 
 - name: Install FGCI CVMFS repofiles
-  yum: name=cvmfs-repofiles-fgi state=present
+  yum:
+    name: cvmfs-repofiles-fgi
+    state: present
   when: fgci_install == True
 
 - name: Install CVMFS client EL6
-  yum: name={{ item }} state=present
+  yum:
+    name: "{{ item }}"
+    state: present
   with_items:
     - "cvmfs-release"
     - "cvmfs-keys"
@@ -45,53 +63,12 @@
   when: ansible_distribution_major_version == "6"
 
 - name: Install CVMFS client EL7
-  yum: name={{ item }} state=present
+  yum:
+    name: "{{ item }}" 
+    state: present
   with_items:
     - "cvmfs-keys"
     - "cvmfs"
     - "cvmfs-config-default"
     - "autofs"
   when: ansible_distribution_major_version == "7"
-
-- name: add a cms.cern.ch.local if cms_site is defined
-  template: src=cms.cern.ch.local dest=/etc/cvmfs/config.d/cms.cern.ch.local mode=0644
-  when: cms_site is defined
-
-- name: template cvmfs/default.local if none exists - no overwrite
-  template: src=default.local dest=/etc/cvmfs/default.local force=no mode=0644
-  when: cvmfs_overwrite_default_local == False
-
-- name: template cvmfs/default.local if it exists - overwrites
-  template: src=default.local dest=/etc/cvmfs/default.local force=yes mode=0644 backup=yes
-  when: cvmfs_overwrite_default_local == True
-
-- name: template /etc/auto.master.d/cvmfs.autofs EL7 only
-  template: src=cvmfs.autofs dest=/etc/auto.master.d/cvmfs.autofs backup=yes
-  register: autofsconfig
-  when: ansible_distribution_major_version == "7"
-
-- name: ensure that autofs is running and enabled
-  service: name=autofs state=started enabled=yes
-  when: ansible_virtualization_type != "docker"
-
-- name: ensure that autofs is restarted after configchange
-  service: name=autofs state=restarted
-  when: autofsconfig.changed and ansible_virtualization_type != "docker"
-
-- name: cvmfs_config chksetup which causes the playbook to fail when there are errors
-  command: cvmfs_config chksetup
-  register: cvmfschksetup
-  failed_when: cvmfschksetup.rc != 0
-  changed_when: false
-  when: ansible_virtualization_type != "docker"
-
-#- name: print output of cvmfschksetup
-#  debug: var=cvmfschksetup["stdout"]
-#  when: cvmfschksetup.changed
-
-- name: check that the repo is mounted
-  stat: path=/cvmfs/{{cvmfs_test_repo}}
-  register: p
-
-- debug: msg="Can list cvmfs_test_repo"
-  when: p.stat.isdir is defined and p.stat.isdir
