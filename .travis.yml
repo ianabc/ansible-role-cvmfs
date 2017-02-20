@@ -16,6 +16,7 @@ env:
 
 install:
   - npm install -g validate-dockerfile
+  - pip install molecule
 
 script:
   # TESTDIR = Where the stable-centos/Dockerfile is located
