@@ -19,6 +19,8 @@ install:
   - pip install molecule
 
 script:
+  - molecule test
+  ##
   # TESTDIR = Where the stable-centos/Dockerfile is located
   - export TESTDIR=tests
   # ROLETOTEST = The name of this repo
