@@ -1,0 +1,15 @@
+ansible-lint
+appdirs
+binaryornot
+click
+cryptography
+docker-py
+future
+jinja2_time
+markupsafe
+molecule
+packaging
+poyo
+ptyprocess
+six>1.6
+whichcraft
