@@ -14,11 +14,11 @@ env:
   - IMAGE_BUILD_PLATFORM=stable-centos7
   - IMAGE_BUILD_PLATFORM=devel-centos7
 
-install:
+before_install:
   - npm install -g validate-dockerfile
   - pip install docker-py molecule
 
-after_install:
+install:
   - molecule test
 before_script:
   ##
