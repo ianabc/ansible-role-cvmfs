@@ -5,8 +5,13 @@
    when: ansible_os_family == "RedHat"
  - include: debian.yml
    when: ansible_os_family == "Debian"
-
 ## Common tasks
+ - name: lineinfile fuse.conf to enable user_allow_other
+   lineinfile:
+     dest: /etc/fuse.conf
+     regexp: '^user_allow_other$'
+     line: 'user_allow_other'
+     backup: yes
 
  - name: add a cms.cern.ch.local if cms_site is defined
    template:
@@ -40,7 +45,7 @@
      src: cvmfs.autofs
      dest: /etc/auto.master.d/cvmfs.autofs
      backup: yes
-   when: (ansible_os_family == "RedHat" and ansible_distribution_major_version|int >= "7") or ansible_os_family == "Debian"
+   when: (ansible_os_family == "RedHat" and ansible_distribution_major_version|int >= 7) or ansible_os_family == "Debian"
    notify: restart autofs
    register: autofsconfig
  

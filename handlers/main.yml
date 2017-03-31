@@ -2,6 +2,6 @@
 - name: restart autofs
   service: 
     name: autofs 
-    state: restarted$
+    state: restarted
   when: ansible_virtualization_type != "docker"
 ...
