@@ -1,6 +1,12 @@
 # {{ ansible_managed }}
 #
-CVMFS_HTTP_PROXY={{cvmfs_http_proxy}}
+{% if cvmfs_repositories is defined %}
+CVMFS_REPOSITORIES="{{ cvmfs_repositories }}"
+{% endif %}
 {% if cvmfs_quota_limit %}
-CVMFS_QUOTA_LIMIT={{cvmfs_quota_limit}}
+CVMFS_QUOTA_LIMIT={{ cvmfs_quota_limit }}
+{% endif %}
+CVMFS_HTTP_PROXY="{{ cvmfs_http_proxy }}"
+{% if cvmfs_low_speed_limit %}
+CVMFS_LOW_SPEED_LIMIT={{ cvmfs_low_speed_limit }}
 {% endif %}

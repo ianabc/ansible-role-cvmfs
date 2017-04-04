@@ -1,6 +1,7 @@
 ---
 # defaults file for ansible-role-cvmfs
 #
+# cvmfs_repositories: cms.cer.ch
 cvmfs_http_proxy: "DIRECT"
 cvmfs_quota_limit: "20480"
 

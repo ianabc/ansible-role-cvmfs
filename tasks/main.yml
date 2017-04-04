@@ -6,6 +6,36 @@
  - include: debian.yml
    when: ansible_os_family == "Debian"
 ## Common tasks
+ - name: Add cvmfs extra domain key directories
+   file:
+     state: directory
+     owner: root
+     group: root
+     mode: 0755
+     path: "/etc/cvmfs/keys/{{ item.domain }}"
+   with_items: "{{ cvmfs_repo_keys_extra }}"
+   when: cvmfs_repo_keys_extra is defined
+
+ - name: Add cvmfs extra domain repository keys
+   copy:
+     content: "{{ item.key }}"
+     dest: "/etc/cvmfs/keys/{{ item.domain }}/{{ item.repository }}.pub"
+     owner: root
+     group: root
+     mode: 0444
+   with_items: "{{ cvmfs_repo_keys_extra }}"
+   when: cvmfs_repo_keys_extra is defined
+
+ - name: Add cvmfs extra domain config
+   copy:
+     content: "{{ item.config }}"
+     dest: "/etc/cvmfs/config.d/{{ item.repository }}.conf"
+     owner: root
+     group: root
+     mode: 0444
+   with_items: "{{ cvmfs_repo_keys_extra }}"
+   when: cvmfs_repo_keys_extra is defined
+
  - name: lineinfile fuse.conf to enable user_allow_other
    lineinfile:
      dest: /etc/fuse.conf
